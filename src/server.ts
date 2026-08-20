@@ -6,7 +6,7 @@ import { connectToDatabase, syncDatabase } from "./database.ts";
 await connectToDatabase();
 
 // Sync the database
-await syncDatabase()
+// await syncDatabase()
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);

@@ -1,6 +1,10 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import path from 'path';
+import cookieParser from "cookie-parser";
+
+import authRoutes from "./routes/auth.ts"
 import userRoutes from "./routes/user.ts"
+import listRoutes from "./routes/list.ts"
 
 const app: Express = express();
 
@@ -8,9 +12,13 @@ const app: Express = express();
 app.use(express.json());
 // parse requests with a Content-Type of application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+// parse cookies
+app.use(cookieParser())
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/list", listRoutes);
 
 // serve static files
 // app.use('/', express.static(path.join(__dirname, "public", "build")));
