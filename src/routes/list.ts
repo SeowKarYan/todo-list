@@ -63,8 +63,8 @@ router.put("/:id", sessionAuthentication, async (req: Request, res: Response) =>
         }
         foundList.title = title
         foundList.description = description
-        const savedList = await foundList.save();
-        return res.status(200).json({ message: "List updated successfully", data: savedList, status: "success" });
+        await foundList.save();
+        return res.status(200).json({ message: "List updated successfully", status: "success" });
     } catch (error) {
         return res.status(500).json({ message: "Internal Error", status: "failed" })
     }

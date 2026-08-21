@@ -21,10 +21,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/list", listRoutes);
 
 // serve static files
-// app.use('/', express.static(path.join(__dirname, "public", "build")));
-// app.get("*", (req, res) => {
-// 	res.sendFile(path.resolve(__dirname, "public", "build", "index.html"));
-// });
+app.use('/', express.static(path.join(import.meta.dirname, "..", "frontend", "dist")));
+app.get("/{*app}", (req, res) => {
+    res.sendFile(path.join(import.meta.dirname, "..", "frontend", "dist", "index.html"));
+});
 
 // Error handling middleware 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

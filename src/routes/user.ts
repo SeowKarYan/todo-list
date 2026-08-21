@@ -2,46 +2,38 @@ import express, { type Request, type Response } from 'express';
 import bcrypt from "bcrypt";
 import { Op } from 'sequelize';
 import User from '../model/user.ts';
+import { sessionAuthentication } from '../function/middleware.ts';
 
 const router = express.Router();
 
-router.post("", async (req: Request, res: Response) => {
+router.get("/", sessionAuthentication, async (req: Request, res: Response) => {
     try {
-        const { username, password } = req.body;
-
-        if (!username || !password) {
-            return res.status(400).json({ message: "Username and password are required", status: "failed" });
+        const foundUser = await User.findByPk(Number(req.user?.id));
+        if (!foundUser) {
+            return res.status(404).json({ message: "User not found", status: "failed" });
         }
 
-        const foundUser = await User.findOne({ where: { username } });
-        if (foundUser) {
-            return res.status(400).json({ message: "User already exists", status: "failed" });
+        let data = {
+            id: foundUser.id,
+            username: foundUser.username,
         }
-
-        const hash = bcrypt.hashSync(password, 10);
-        await User.create({ username, password: hash });
-        return res.status(201).json({ message: "User created successfully", status: "success" });
+        return res.status(200).json({ message: "User retrieved successfully", data, status: "success" });
     } catch (error) {
         return res.status(500).json({ message: "Internal Error", status: "failed" })
     }
 })
 
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/", sessionAuthentication, async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
         const { username, password } = req.body;
 
-        if (!id) {
-            return res.status(400).json({ message: "User ID is required", status: "failed" });
-        }
-
-        let foundUser = await User.findByPk(Number(id));
+        let foundUser = await User.findByPk(Number(req.user?.id));
         if (!foundUser) {
             return res.status(404).json({ message: "User not found", status: "failed" });
         }
 
         if (username) {
-            let foundUsername = await User.findOne({ where: { username, id: { [Op.not]: id } } });
+            let foundUsername = await User.findOne({ where: { username, id: { [Op.not]: foundUser.id } } });
             if (foundUsername) {
                 return res.status(400).json({ message: "Username already exists", status: "failed" });
             }
