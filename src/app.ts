@@ -1,6 +1,7 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import path from 'path';
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import authRoutes from "./routes/auth.ts"
 import userRoutes from "./routes/user.ts"
@@ -14,6 +15,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // parse cookies
 app.use(cookieParser())
+// cors
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+}));
 
 // Routes
 app.use("/api/auth", authRoutes);
