@@ -16,3 +16,12 @@ Object.defineProperty(window, "matchMedia", {
         dispatchEvent: vi.fn(),
     })),
 });
+
+// ResizeObserver for Ant Design components
+class ResizeObserver {
+    observe() { }
+    unobserve() { }
+    disconnect() { }
+}
+
+globalThis.ResizeObserver = ResizeObserver;

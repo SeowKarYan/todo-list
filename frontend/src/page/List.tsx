@@ -116,7 +116,7 @@ const List = () => {
                     </div>
                 </div>
                 {isLoading && (
-                    <div style={{ textAlign: "center", padding: 24 }}>
+                    <div data-testid="list-loading-spinner" style={{ textAlign: "center", padding: 24 }}>
                         <Spin />
                     </div>
                 )}
@@ -124,9 +124,10 @@ const List = () => {
                 {!isLoading && !isError && (
                     <AntList
                         dataSource={data ?? []}
-                        locale={{ emptyText: <Empty description="No lists yet" /> }}
+                        locale={{ emptyText: <Empty data-testid="empty-list" description="No lists yet" /> }}
                         renderItem={(item) => (
                             <AntList.Item
+                                data-testid="list-items"
                                 actions={[
                                     <Button type="link" onClick={() => openEditModal(item)}>
                                         Edit
@@ -149,10 +150,12 @@ const List = () => {
                                     title={item.title}
                                     description={
                                         <>
-                                            <div dangerouslySetInnerHTML={{ __html: item.description }} />
                                             <Text type="secondary">
                                                 Updated {new Date(item.updatedAt).toLocaleString()}
                                             </Text>
+                                            <div style={{ whiteSpace: 'pre-line' }}>
+                                                {item.description}
+                                            </div>
                                         </>
                                     }
                                 />

@@ -1,61 +1,57 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from "react-router";
+import { renderWithProviders } from "../test/renderWithProviders";
 import Login from "./Login";
 
 // Mock the API hook
-const mockLogin = vi.fn();
+const login = vi.fn();
 
 vi.mock("../redux/services/authApi", () => ({
-    useLoginMutation: () => [
-        mockLogin,
-        {
-            isLoading: false,
-        },
-    ],
+    useLoginMutation: () => [login, { isLoading: false, }],
 }));
 
 // Mock navigate
-const mockNavigate = vi.fn();
+const navigate = vi.fn();
 
 vi.mock("react-router", async () => {
     const actual = await vi.importActual<typeof import("react-router")>("react-router");
 
     return {
         ...actual,
-        useNavigate: () => mockNavigate,
+        useNavigate: () => navigate,
     };
 });
 
-describe("Login", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+beforeEach(() => {
+    vi.clearAllMocks();
+});
 
-        render(
-            <MemoryRouter>
-                <Login />
-            </MemoryRouter>
-        );
-    });
+afterEach(() => {
+    cleanup();
+});
 
-    afterEach(() => {
-        cleanup();
-    });
 
+describe("Render Login", () => {
     it("renders login form", () => {
+        renderWithProviders(<Login />)
+
         expect(screen.getByPlaceholderText("Username")).toBeInTheDocument();
         expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
     });
+});
 
+describe("Submit Login Form", () => {
     it("logs in successfully and navigates to /list", async () => {
-        mockLogin.mockReturnValue({
+        login.mockReturnValue({
             unwrap: vi.fn().mockResolvedValue({
                 message: "Login successfully",
                 status: "success"
             }),
         });
+
+        renderWithProviders(<Login />)
 
         const user = userEvent.setup();
 
@@ -66,17 +62,17 @@ describe("Login", () => {
         await user.click(screen.getByRole("button", { name: "Login" }));
 
         await waitFor(() => {
-            expect(mockLogin).toHaveBeenCalledWith({
+            expect(login).toHaveBeenCalledWith({
                 username: "karyan",
                 password: "123456",
             });
         });
 
-        expect(mockNavigate).toHaveBeenCalledWith("/list");
+        expect(navigate).toHaveBeenCalledWith("/list");
     });
 
     it("shows error message from backend when login failed", async () => {
-        mockLogin.mockReturnValue({
+        login.mockReturnValue({
             unwrap: vi.fn().mockRejectedValue({
                 data: {
                     message: "Password is incorrect",
@@ -84,6 +80,8 @@ describe("Login", () => {
                 },
             }),
         });
+
+        renderWithProviders(<Login />)
 
         const user = userEvent.setup();
 
@@ -93,15 +91,24 @@ describe("Login", () => {
 
         await user.click(screen.getByRole("button", { name: "Login" }));
 
+        await waitFor(() => {
+            expect(login).toHaveBeenCalledWith({
+                username: "karyan",
+                password: "wrongpassword",
+            });
+        });
+
         expect(await screen.findByText("Password is incorrect")).toBeInTheDocument();
 
-        expect(mockNavigate).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
     });
 
     it("shows error message when call to backend failed", async () => {
-        mockLogin.mockReturnValue({
+        login.mockReturnValue({
             unwrap: vi.fn().mockRejectedValue("Network error"),
         });
+
+        renderWithProviders(<Login />)
 
         const user = userEvent.setup();
 
@@ -113,6 +120,38 @@ describe("Login", () => {
 
         expect(await screen.findByText("Network error")).toBeInTheDocument();
 
-        expect(mockNavigate).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("missing username submit login form", async () => {
+        renderWithProviders(<Login />)
+
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText("Password"), "123456");
+
+        await user.click(screen.getByRole("button", { name: "Login" }));
+
+        expect(await screen.findByText("Please enter your username")).toBeInTheDocument();
+
+        expect(login).not.toHaveBeenCalled()
+
+        expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("missing password submit login form", async () => {
+        renderWithProviders(<Login />)
+
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+
+        await user.click(screen.getByRole("button", { name: "Login" }));
+
+        expect(await screen.findByText("Please enter your password")).toBeInTheDocument();
+
+        expect(login).not.toHaveBeenCalled()
+
+        expect(navigate).not.toHaveBeenCalled();
     });
 });
