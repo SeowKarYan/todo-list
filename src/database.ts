@@ -21,5 +21,14 @@ export const syncDatabase = async () => {
     }
 }
 
+export const disconnectDatabase = async () => {
+    try {
+        await sequelize.close()
+        console.log('Database disconnected successfully.');
+    } catch (error) {
+        console.error('Unable to disconnect the database:', error);
+    }
+}
+
 User.hasMany(List);
 List.belongsTo(User);
