@@ -74,4 +74,45 @@ describe("Login", () => {
 
         expect(mockNavigate).toHaveBeenCalledWith("/list");
     });
+
+    it("shows error message from backend when login failed", async () => {
+        mockLogin.mockReturnValue({
+            unwrap: vi.fn().mockRejectedValue({
+                data: {
+                    message: "Password is incorrect",
+                    status: "failed"
+                },
+            }),
+        });
+
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+
+        await user.type(screen.getByPlaceholderText("Password"), "wrongpassword");
+
+        await user.click(screen.getByRole("button", { name: "Login" }));
+
+        expect(await screen.findByText("Password is incorrect")).toBeInTheDocument();
+
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it("shows error message when call to backend failed", async () => {
+        mockLogin.mockReturnValue({
+            unwrap: vi.fn().mockRejectedValue("Network error"),
+        });
+
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+
+        await user.type(screen.getByPlaceholderText("Password"), "123456");
+
+        await user.click(screen.getByRole("button", { name: "Login" }));
+
+        expect(await screen.findByText("Network error")).toBeInTheDocument();
+
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
 });
