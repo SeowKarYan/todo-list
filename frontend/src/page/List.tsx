@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, Form, Input, List as AntList, Spin, Typography, Alert, Empty, Modal, message, Popconfirm } from "antd";
+import { Button, Card, Form, Input, List as AntList, Spin, Typography, Alert, Empty, Modal, message, Popconfirm, Flex } from "antd";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { useAddListMutation, useDeleteListMutation, useGetFullListQuery, useUpdateListMutation } from "../redux/services/listApi";
@@ -91,30 +91,21 @@ const List = () => {
     };
 
     return (
-        <div
-            style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                padding: 24,
-                backgroundColor: "#f0f2f5",
-            }}
-        >
+        <Flex flex="1" justify="center" align="flex-start" style={{ padding: 24, backgroundColor: "#f0f2f5" }}>
             <Card style={{ width: 640, maxWidth: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <Flex align="center" justify="space-between" style={{ marginBottom: 16 }}>
                     <Title level={2} style={{ margin: 0 }}>
                         To-do list
                     </Title>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <Flex gap={8}>
                         <Button type="primary" onClick={openAddModal}>
                             Add list
                         </Button>
                         <Button onClick={onLogout} loading={isLoggingOut}>
                             Logout
                         </Button>
-                    </div>
-                </div>
+                    </Flex>
+                </Flex>
                 {isLoading && (
                     <div data-testid="list-loading-spinner" style={{ textAlign: "center", padding: 24 }}>
                         <Spin />
@@ -199,7 +190,7 @@ const List = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-        </div>
+        </Flex>
     );
 };
 

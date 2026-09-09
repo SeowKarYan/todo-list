@@ -32,9 +32,6 @@ router.get("/", sessionAuthentication, async (req: Request, res: Response) => {
 router.get("/:id", sessionAuthentication, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: "List ID is required", status: "failed" });
-        }
 
         const foundList = await List.findOne({ where: { id, userId: req.user?.id } });
         if (!foundList) {
@@ -51,9 +48,7 @@ router.put("/:id", sessionAuthentication, async (req: Request, res: Response) =>
     try {
         const { id } = req.params;
         const { title, description } = req.body;
-        if (!id) {
-            return res.status(400).json({ message: "List ID is required", status: "failed" });
-        }
+
         if (!title || !description) {
             return res.status(400).json({ message: "Title and description is required", status: "failed" });
         }
@@ -73,9 +68,7 @@ router.put("/:id", sessionAuthentication, async (req: Request, res: Response) =>
 router.delete("/:id", sessionAuthentication, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: "List ID is required", status: "failed" });
-        }
+
         const foundList = await List.findOne({ where: { id, userId: req.user?.id } });
         if (!foundList) {
             return res.status(404).json({ message: "List not found", status: "failed" });

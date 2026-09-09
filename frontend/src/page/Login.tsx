@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Typography, message } from "antd";
+import { Button, Card, Flex, Form, Input, Typography, message } from "antd";
 import { useNavigate } from "react-router";
 import { useLoginMutation } from "../redux/services/authApi";
 import type { loginRequest } from "../types/auth";
@@ -25,16 +25,7 @@ const Login = () => {
     };
 
     return (
-        <div
-            style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 24,
-                backgroundColor: "#f0f2f5",
-            }}
-        >
+        <Flex flex="1" justify="center" align="center" style={{ padding: 24, backgroundColor: "#f0f2f5" }}>
             <Card style={{ width: 360, textAlign: "left" }}>
                 <Title level={2} style={{ marginTop: 0, textAlign: "center" }}>
                     Login
@@ -61,7 +52,7 @@ const Login = () => {
                     </Form.Item>
                 </Form>
             </Card>
-        </div>
+        </Flex>
     );
 };
 

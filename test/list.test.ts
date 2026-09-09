@@ -72,6 +72,13 @@ describe("POST /api/list", () => {
 });
 
 describe("GET /api/list/", () => {
+    it("fetch list without login", async () => {
+        const response = await request(app)
+            .get("/api/list")
+
+        expect(response.status).toBe(401);
+    });
+
     it("fetch list successfully", async () => {
         const response = await agent
             .get("/api/list")
