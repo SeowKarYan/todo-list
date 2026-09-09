@@ -57,7 +57,7 @@ describe("Submit Login Form", () => {
 
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+        await user.type(screen.getByPlaceholderText("Username"), "test-account");
 
         await user.type(screen.getByPlaceholderText("Password"), "123456");
 
@@ -65,7 +65,7 @@ describe("Submit Login Form", () => {
 
         await waitFor(() => {
             expect(login).toHaveBeenCalledWith({
-                username: "karyan",
+                username: "test-account",
                 password: "123456",
             });
         });
@@ -87,7 +87,7 @@ describe("Submit Login Form", () => {
 
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+        await user.type(screen.getByPlaceholderText("Username"), "test-account");
 
         await user.type(screen.getByPlaceholderText("Password"), "wrongpassword");
 
@@ -95,7 +95,7 @@ describe("Submit Login Form", () => {
 
         await waitFor(() => {
             expect(login).toHaveBeenCalledWith({
-                username: "karyan",
+                username: "test-account",
                 password: "wrongpassword",
             });
         });
@@ -114,7 +114,7 @@ describe("Submit Login Form", () => {
 
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+        await user.type(screen.getByPlaceholderText("Username"), "test-account");
 
         await user.type(screen.getByPlaceholderText("Password"), "123456");
 
@@ -146,7 +146,7 @@ describe("Submit Login Form", () => {
 
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText("Username"), "karyan");
+        await user.type(screen.getByPlaceholderText("Username"), "test-account");
 
         await user.click(screen.getByRole("button", { name: "Login" }));
 

@@ -11,9 +11,9 @@ router.post("", sessionAuthentication, async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Title and description are required", status: "failed" });
         }
 
-        await List.create({ title, description, userId: req.user?.id });
+        const createdList = await List.create({ title, description, userId: req.user?.id });
 
-        return res.status(201).json({ message: "List created successfully", status: "success" });
+        return res.status(201).json({ message: "List created successfully", status: "success", data: createdList });
     } catch (error) {
         return res.status(500).json({ message: "Internal Error", status: "failed" })
     }
@@ -63,8 +63,8 @@ router.put("/:id", sessionAuthentication, async (req: Request, res: Response) =>
         }
         foundList.title = title
         foundList.description = description
-        await foundList.save();
-        return res.status(200).json({ message: "List updated successfully", status: "success" });
+        let updatedList = await foundList.save();
+        return res.status(200).json({ message: "List updated successfully", status: "success", data: updatedList });
     } catch (error) {
         return res.status(500).json({ message: "Internal Error", status: "failed" })
     }
