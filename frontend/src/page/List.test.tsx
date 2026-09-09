@@ -112,7 +112,7 @@ describe("Get Full List", () => {
             isError: true,
             error: {
                 data: {
-                    message: "Failed to load lists.",
+                    message: "Internal Error",
                     status: "failed"
                 }
             },
@@ -123,7 +123,7 @@ describe("Get Full List", () => {
         expect(screen.queryByTestId("list-loading-spinner")).not.toBeInTheDocument();
         expect(screen.queryByTestId("list-items")).not.toBeInTheDocument();
         expect(screen.queryByTestId("empty-list")).not.toBeInTheDocument();
-        expect(screen.getByText("Failed to load lists.")).toBeInTheDocument();
+        expect(screen.getByText("Internal Error")).toBeInTheDocument();
         expect(navigate).not.toHaveBeenCalled();
     });
 
@@ -141,6 +141,23 @@ describe("Get Full List", () => {
         expect(screen.queryByTestId("list-items")).not.toBeInTheDocument();
         expect(screen.queryByTestId("empty-list")).not.toBeInTheDocument();
         expect(screen.getByText("Network Error")).toBeInTheDocument();
+        expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("display fallback error when failed to fetch list", () => {
+        getFullList.mockReturnValue({
+            data: [],
+            isLoading: false,
+            isError: true,
+            error: null,
+        });
+
+        renderWithProviders(<List />)
+
+        expect(screen.queryByTestId("list-loading-spinner")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("list-items")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("empty-list")).not.toBeInTheDocument();
+        expect(screen.getByText("Failed to load lists.")).toBeInTheDocument();
         expect(navigate).not.toHaveBeenCalled();
     });
 
@@ -167,8 +184,10 @@ describe("Add List", () => {
     it("add list successfully", async () => {
         addList.mockReturnValue({
             unwrap: vi.fn().mockResolvedValue({
-                message: "List created successfully",
-                status: "success"
+                data: {
+                    message: "List created successfully",
+                    status: "success"
+                }
             }),
         });
 
@@ -200,7 +219,7 @@ describe("Add List", () => {
         addList.mockReturnValue({
             unwrap: vi.fn().mockRejectedValue({
                 data: {
-                    message: "Internal Error",
+                    message: "Failed to add list.",
                     status: "failed"
                 },
             }),
@@ -227,7 +246,7 @@ describe("Add List", () => {
             });
         });
 
-        expect(await screen.findByText("Internal Error")).toBeInTheDocument();
+        expect(await screen.findByText("Failed to add list.")).toBeInTheDocument();
     });
 
     it("missing title when add list", async () => {
@@ -286,12 +305,13 @@ describe("Edit List", () => {
         });
     });
 
-
     it("edit list successfully", async () => {
         updateList.mockReturnValue({
             unwrap: vi.fn().mockResolvedValue({
-                message: "List updated successfully",
-                status: "success"
+                data: {
+                    message: "List updated successfully",
+                    status: "success"
+                }
             }),
         });
 
@@ -326,7 +346,7 @@ describe("Edit List", () => {
         updateList.mockReturnValue({
             unwrap: vi.fn().mockRejectedValue({
                 data: {
-                    message: "Internal Error",
+                    message: "Failed to update list.",
                     status: "failed"
                 },
             }),
@@ -356,6 +376,135 @@ describe("Edit List", () => {
             });
         });
 
-        expect(await screen.findByText("Internal Error")).toBeInTheDocument();
+        expect(await screen.findByText("Failed to update list.")).toBeInTheDocument();
+    });
+})
+
+describe("Delete List", () => {
+    beforeEach(() => {
+        getFullList.mockReturnValue({
+            data: [
+                {
+                    id: 1,
+                    title: "Test List Title",
+                    description: "This is a test list description.",
+                    userId: 1,
+                    createdAt: "2026-01-01T00:00:00.000Z",
+                    updatedAt: "2026-01-01T00:00:00.000Z",
+                },
+            ],
+            isLoading: false,
+            isError: false,
+            error: undefined,
+        });
+    });
+
+
+    it("delete list successfully", async () => {
+        deleteList.mockReturnValue({
+            unwrap: vi.fn().mockResolvedValue({
+                data: {
+                    message: "List deleted successfully",
+                    status: "success"
+                }
+            }),
+        });
+
+        renderWithProviders(<List />)
+
+        expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
+
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "Delete" }));
+
+        await user.click(screen.getByRole("button", { name: "Confirm" }));
+
+        await waitFor(() => {
+            expect(deleteList).toHaveBeenCalledWith(1);
+        });
+
+        expect(await screen.findByText("List deleted successfully")).toBeInTheDocument();
+    });
+
+    it("delete list failed", async () => {
+        deleteList.mockReturnValue({
+            unwrap: vi.fn().mockRejectedValue({
+                data: {
+                    message: "Failed to delete list.",
+                    status: "failed"
+                },
+            }),
+        });
+
+        renderWithProviders(<List />)
+
+        expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
+
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "Delete" }));
+
+        await user.click(screen.getByRole("button", { name: "Confirm" }));
+
+        await waitFor(() => {
+            expect(deleteList).toHaveBeenCalledWith(1);
+        });
+
+        expect(await screen.findByText("Failed to delete list.")).toBeInTheDocument();
+    });
+})
+
+describe("Logout", () => {
+    it("logout successfully and navigate to /", async () => {
+        logout.mockReturnValue({
+            unwrap: vi.fn().mockResolvedValue({
+                data: {
+                    message: "Logged out",
+                    status: "success"
+                }
+            }),
+        });
+
+        renderWithProviders(<List />)
+
+        expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
+
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "Logout" }));
+
+        await waitFor(() => {
+            expect(logout).toHaveBeenCalled();
+        });
+
+        expect(navigate).toHaveBeenCalledWith("/");
+    });
+
+    it("logout failed", async () => {
+        logout.mockReturnValue({
+            unwrap: vi.fn().mockRejectedValue({
+                data: {
+                    message: "Failed to log out.",
+                    status: "failed"
+                }
+            }),
+        });
+
+        renderWithProviders(<List />)
+
+        expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
+
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "Logout" }));
+
+        await waitFor(() => {
+            expect(logout).toHaveBeenCalled();
+        });
+
+        expect(await screen.findByText("Failed to log out.")).toBeInTheDocument();
+
+        expect(navigate).not.toHaveBeenCalled();
     });
 })

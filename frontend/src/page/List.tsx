@@ -135,7 +135,7 @@ const List = () => {
                                     <Popconfirm
                                         title="Delete this list?"
                                         description="This cannot be undone."
-                                        okText="Delete"
+                                        okText="Confirm"
                                         cancelText="Cancel"
                                         okButtonProps={{ danger: true, loading: isDeleting && deletingId === item.id }}
                                         onConfirm={() => onDelete(item.id)}

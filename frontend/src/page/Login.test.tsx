@@ -46,8 +46,10 @@ describe("Submit Login Form", () => {
     it("logs in successfully and navigates to /list", async () => {
         login.mockReturnValue({
             unwrap: vi.fn().mockResolvedValue({
-                message: "Login successfully",
-                status: "success"
+                data: {
+                    message: "Login successfully",
+                    status: "success"
+                }
             }),
         });
 
