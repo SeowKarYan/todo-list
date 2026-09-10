@@ -1,4 +1,4 @@
-## This is a simple todo list app with login feature
+This is a simple todo list app with login feature
 
 ## Features
 - User authentication
