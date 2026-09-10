@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from '@testing-library/user-event';
-import { renderWithProviders } from "../test/renderWithProviders";
-import Login from "./Login";
+import { renderWithProviders } from "./renderWithProviders";
+import Login from "../page/Login";
 
 // Mock the API hook
 const login = vi.fn();

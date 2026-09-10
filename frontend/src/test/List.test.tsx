@@ -1,8 +1,8 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "../test/renderWithProviders";
-import List from "./List";
+import { renderWithProviders } from "./renderWithProviders";
+import List from "../page/List";
 import type { getListResponse } from "../types/list";
 
 // Mock navigate
