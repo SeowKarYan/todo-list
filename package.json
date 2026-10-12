@@ -4,10 +4,13 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
+    "dev": "node --watch src/server.ts",
     "start": "node src/server.ts",
     "test": "vitest",
     "test:run": "vitest run",
-    "coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "npx playwright test",
+    "test:e2e:codegen": "npx playwright codegen http://localhost:5173"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +28,7 @@
     "sequelize": "^6.37.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
