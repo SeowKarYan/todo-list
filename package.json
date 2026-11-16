@@ -7,7 +7,7 @@
     "dev": "node --watch src/server.ts",
     "start": "node src/server.ts",
     "db:create": "npx sequelize-cli db:create",
-    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:migrate": "npx sequelize-cli --options-path .sequelizerc.cjs db:migrate",
     "db:seed": "npx sequelize-cli db:seed:all",
     "db:seed:undo": "npx sequelize-cli db:seed:undo:all",
     "test": "vitest",
